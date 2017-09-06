@@ -126,13 +126,16 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
+interface = os.environ["IP"]
+redis_host = os.environ.get('REDIS_HOST', interface)
+
 # Channel settings
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "asgi_redis.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+            "hosts": [(redis_host, 6379)],
         },
-        "ROUTING": "chat.routing.channel_routing",
+        "ROUTING": "chatbox.routing.channel_routing",
     },
 }

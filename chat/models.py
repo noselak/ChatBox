@@ -11,3 +11,14 @@ class Message(models.Model):
     handle = models.TextField()
     message = models.TextField()
     timestamp = models.DateTimeField(default=timezone.now, db_index=True)
+
+    @property
+    def formatted_timestamp(self):
+        return self.timestamp.strftime('%b %-d %-I:%M %p')
+    
+    def as_dict(self):
+        return {
+            'handle': self.handle,
+            'message': self.message,
+            'timestamp': self.formatted_timestamp
+        }

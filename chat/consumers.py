@@ -3,6 +3,8 @@ import json
 import logging
 from channels import Group
 from channels.sessions import channel_session
+from django.forms.models import model_to_dict
+
 from .models import Room
 
 log = logging.getLogger(__name__)
@@ -14,7 +16,7 @@ def ws_connect(message):
     # and if the Room exists. Otherwise, bails (meaning this is a some othersort
     # of websocket). So, this is effectively a version of _get_object_or_404.
     try:
-        prefix, label = message['path'].decode('ascii').strip('/').split('/')
+        prefix, label = message['path'].strip('/').split('/')
         if prefix != 'chat':
             log.debug('invalid ws path=%s', message['path'])
             return
@@ -34,6 +36,7 @@ def ws_connect(message):
     Group('chat-'+label, channel_layer=message.channel_layer).add(message.reply_channel)
 
     message.channel_session['room'] = room.label
+    message.reply_channel.send({'accept':True})
 
 @channel_session
 def ws_receive(message):
